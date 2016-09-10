@@ -25,6 +25,11 @@ models/logreg_simple.pkl: data/interim/processed_train.csv requirements
 	python src/models/train_model.py data/interim/processed_train.csv \
 		models/logreg_simple.pkl
 
+submissions/submission1.csv: data/interim/processed_test.csv models/logreg_simple.pkl requirements
+	python src/models/predict_model.py data/interim/processed_test.csv \
+		models/logreg_simple.pkl \
+    submissions/submission1.csv
+
 clean:
 	find . -name "*.pyc" -exec rm {} \;
 

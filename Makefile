@@ -15,6 +15,16 @@ requirements:
 
 data: requirements
 
+data/interim/processed_train.csv: data/raw/train.csv requirements
+	python src/data/make_dataset.py data/raw/train.csv data/interim/processed_train.csv
+
+data/interim/processed_test.csv: data/raw/test.csv requirements
+	python src/data/make_dataset.py data/raw/test.csv data/interim/processed_test.csv
+
+models/logreg_simple.pkl: data/interim/processed_train.csv requirements
+	python src/models/train_model.py data/interim/processed_train.csv \
+		models/logreg_simple.pkl
+
 clean:
 	find . -name "*.pyc" -exec rm {} \;
 

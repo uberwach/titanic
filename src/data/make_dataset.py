@@ -20,11 +20,17 @@ def main(input_filepath, output_filepath):
     df = pd.read_csv(input_filepath)
     logger.info(df.columns)
 
-    df = df[["PassengerId", "Pclass", "Survived", "Sex", "Age", "Fare"]]
+
+    if 'Survived' in df.columns:
+        df = df[["PassengerId", "Pclass", "Survived", "Sex", "Age", "Fare"]]
+    else:
+        df = df[["PassengerId", "Pclass", "Sex", "Age", "Fare"]]
+
     logger.info(df.columns)
 
     df = replace_sex(df)
-    df["Age"].fillna(0)
+    df["Age"] = df["Age"].fillna(0)
+    df["Fare"] = df["Fare"].fillna(0.0)
 
     df.to_csv(output_filepath, index=False)
 

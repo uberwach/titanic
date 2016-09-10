@@ -4,6 +4,11 @@ import click
 import logging
 from dotenv import find_dotenv, load_dotenv
 
+import pandas as pd
+
+def replace_sex(df):
+    df['Sex'] = df['Sex'].apply(lambda sex: 1 if sex == 'male' else 0)
+    return df
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
@@ -12,6 +17,16 @@ def main(input_filepath, output_filepath):
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
 
+    df = pd.read_csv(input_filepath)
+    logger.info(df.columns)
+
+    df = df[["PassengerId", "Pclass", "Survived", "Sex", "Age", "Fare"]]
+    logger.info(df.columns)
+
+    df = replace_sex(df)
+    df["Age"].fillna(0)
+
+    df.to_csv(output_filepath, index=False)
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

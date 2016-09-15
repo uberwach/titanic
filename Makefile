@@ -15,6 +15,10 @@ requirements:
 
 data: requirements
 
+data/interim/data_v2.pkl: data/raw/train.csv data/raw/test.csv requirements
+	python src/data/make_dataset_v2.py data/raw/train.csv data/raw/test.csv \
+		data/interim/data_v2.pkl
+
 data/interim/processed_train.csv: data/raw/train.csv requirements
 	python src/data/make_dataset.py data/raw/train.csv data/interim/processed_train.csv
 

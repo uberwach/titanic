@@ -12,6 +12,7 @@ scikit-learn
 pandas
 matplotlib
 numpy
+xgboost
 # nlp
 #gensim
 #spacy

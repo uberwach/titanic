@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
 import click
@@ -7,7 +8,7 @@ from dotenv import find_dotenv, load_dotenv
 import pandas as pd
 import numpy as np
 import re
-
+from sklearn.externals import joblib
 # This program reads in both train and test data set
 # and creates a dataset dictionary
 # of cleaned and sanitized data.
@@ -46,13 +47,31 @@ def main(train_filepath, test_filepath, output_filepath):
     mean_age = df['Age'].mean()
     df['Age'][nan_age_idx] = mean_age
 
-    # Encode embarked as numbers 0, 1, 2, ...
+    # Encode 'Embarked' as numbers 0, 1, 2, ...
     df = pd.get_dummies(df, columns=['Embarked'], dummy_na=True,
                         drop_first=True)
 
+    # same for 'Sex'
+    df = pd.get_dummies(df, columns=['Sex'], dummy_na=True, drop_first=True)
+
+    # extract title from name
     df['Title'] = df['Name'].apply(extract_title)
     df = pd.get_dummies(df, columns=['Title'], dummy_na=True, drop_first=True)
 
+    # clean up unused columns
+    df.drop(['Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
+
+    # split data frame again to store seperately
+    df_train = df[~pd.isnull(df['Survived'])]
+    df_test = df[pd.isnull(df['Survived'])]
+
+    df_train.drop(['PassengerId'], axis=1, inplace=True)
+    logger.info('Column names: {}'.format(df_train.columns))
+
+    joblib.dump({
+        'train': df_train,
+        'test': df_test
+    }, output_filepath, compress=3)
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(levelname)s - %(message)s'

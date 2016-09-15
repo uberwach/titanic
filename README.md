@@ -36,10 +36,9 @@ Project Organization
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   │   │── make_dataset.py <- creates quickly hacked data files
+    │   │   └── make_dataset_v2.py <- prepares features properly instead of Ticket and Cabin.
     │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │   │                 predictions for submissions

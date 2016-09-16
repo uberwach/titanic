@@ -41,21 +41,32 @@ def main(train_filepath, test_filepath, output_filepath):
     df = pd.concat([df_train, df_test])
     # keep information which age entries were NaN (helpful for some learners
     # think logistic regression vs decision trees)
-    nan_age_idx = pd.isnull(df['Age'])
-    df['Age_nan'] = nan_age_idx.astype(int)
-    # replace missing ages with mean
-    mean_age = df['Age'].mean()
-    df['Age'][nan_age_idx] = mean_age
+    df['Age_nan'] = pd.isnull(df['Age']).astype(int)
 
-    # Encode 'Embarked' as numbers 0, 1, 2, ...
-    df = pd.get_dummies(df, columns=['Embarked'], dummy_na=True,
+    # we set Fare to the median for missing entries
+    df.Fare.fillna(8.05, inplace=True)
+    # Encode 'Embarked' as one-hot
+    df.Embarked.fillna(value='S', inplace=True)
+
+    df = pd.get_dummies(df, columns=['Embarked'],
                         drop_first=True)
 
     # same for 'Sex'
     df = pd.get_dummies(df, columns=['Sex'], dummy_na=True, drop_first=True)
 
+    # Pclass
+    df = pd.get_dummies(df, columns=['Pclass'], dummy_na=True, drop_first=True)
+    # SibSp
+    df = pd.get_dummies(df, columns=['SibSp'], dummy_na=True, drop_first=True)
+
     # extract title from name
     df['Title'] = df['Name'].apply(extract_title)
+    df.loc[df['Title'] == 'Ms', 'Title'] = 'Miss'
+
+    for t in df[np.isnan(df["Age"])].Title.unique():
+        df.loc[(df["Title"] == t) & np.isnan(df["Age"]), "Age"] = df[
+            df["Title"] == t].Age.median()
+
     df = pd.get_dummies(df, columns=['Title'], dummy_na=True, drop_first=True)
 
     # clean up unused columns

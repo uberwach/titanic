@@ -1,4 +1,4 @@
-.PHONY: clean lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean lint requirements sync_data_to_s3 sync_data_from_s3 xgboost_exp
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -27,8 +27,8 @@ models/logreg_simple.pkl: data/interim/processed_train.csv requirements
 	python src/models/train_model.py data/interim/processed_train.csv \
 		models/logreg_simple.pkl
 
-models/xgboost.pkl: data/interim/data_v2.pkl requirements
-	python src/models/train_xgboost.py data/interim/data_v2.pkl models/xgboost.pkl
+xgboost_exp: data/interim/data_v2.pkl requirements
+	python src/models/train_xgboost.py data/interim/data_v2.pkl models/xgboost.pkl submissions/submission_xgb.csv
 
 submissions/submission1.csv: data/interim/processed_test.csv models/logreg_simple.pkl requirements
 	python src/models/predict_model.py data/interim/processed_test.csv \
